@@ -1,0 +1,377 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 8.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       157,          7]
+NotebookDataLength[     16369,        368]
+NotebookOptionsPosition[     15926,        351]
+NotebookOutlinePosition[     16467,        370]
+CellTagsIndexPosition[     16424,        367]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Viterbi", "[", 
+   RowBox[{"X_", ",", "M_", ",", "E_", ",", "e_"}], "]"}], ":=", 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{"vtrbi", " ", "-", " ", 
+     RowBox[{
+     "the", " ", "most", " ", "likely", " ", "path", " ", "is", " ", 
+      "returned"}], " ", "-", " ", 
+     RowBox[{"inspired", " ", "by", " ", 
+      RowBox[{"http", ":"}]}]}], "//", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"en", ".", "wikipedia", ".", "org"}], "/", "wiki"}], "/", 
+     "Viterbi_algorithm"}]}], "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"Module", "[", 
+   RowBox[{
+    RowBox[{"{", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"v", "=", 
+       RowBox[{"ConstantArray", "[", 
+        RowBox[{"0", ",", 
+         RowBox[{"Length", "[", "X", "]"}]}], "]"}]}], ",", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+        RowBox[{
+         RowBox[{
+         "I", " ", "want", " ", "to", " ", "use", " ", "only", " ", "one", 
+          " ", "vector"}], ";", " ", 
+         RowBox[{
+         "in", " ", "the", " ", "wiki", " ", "it", " ", "uses", " ", 
+          "v_t"}]}], ",", " ", 
+        RowBox[{"one", " ", "for", " ", "each", " ", "t"}], ",", " ", 
+        RowBox[{
+        "but", " ", "as", " ", "the", " ", "previous", " ", "we", " ", "only",
+          " ", "need", " ", "it", " ", "to", " ", "take", " ", "its", " ", 
+         "max", " ", "and", " ", "we", " ", "want", " ", "to", " ", "return", 
+         " ", "the", " ", "path"}], ",", " ", 
+        RowBox[{
+        "first", " ", "we", " ", "give", " ", "the", " ", "max", " ", "and", 
+         " ", "then", " ", "we", " ", "overwrite", " ", "it", " ", "with", 
+         " ", "the", " ", "current", " ", "iteration"}]}], "*)"}], 
+      "\[IndentingNewLine]", 
+      RowBox[{"m", "=", 
+       RowBox[{"Length", "[", "X", "]"}]}], ",", "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{"dimensione", " ", "X"}], "*)"}], "\[IndentingNewLine]", 
+      RowBox[{"t", "=", 
+       RowBox[{"Length", "[", "e", "]"}]}]}], "\[IndentingNewLine]", "}"}], 
+    ",", "\[IndentingNewLine]", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"max", "=", 
+         RowBox[{"ConstantArray", "[", 
+          RowBox[{"0", ",", "m"}], "]"}]}], ",", "\[IndentingNewLine]", 
+        RowBox[{"(*", 
+         RowBox[{
+          RowBox[{
+          "the", " ", "vector", " ", "we", " ", "take", " ", "the", " ", 
+           "max", " ", "from"}], ",", " ", 
+          RowBox[{"for", " ", "every", " ", "iteration"}]}], "*)"}], 
+        "\[IndentingNewLine]", 
+        RowBox[{"ptr", "=", 
+         RowBox[{"ConstantArray", "[", 
+          RowBox[{"0", ",", 
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{"t", "-", "1"}], ",", "m"}], "}"}]}], "]"}]}], ",", 
+        "\[IndentingNewLine]", 
+        RowBox[{"(*", 
+         RowBox[{
+          RowBox[{"the", " ", 
+           RowBox[{"max", "'"}], "s", " ", "from", " ", "an", " ", 
+           "iteration"}], ";", " ", 
+          RowBox[{"t", "-", 
+           RowBox[{
+           "1", " ", "as", " ", "the", " ", "initialization", " ", "is", " ", 
+            "not", " ", "taken", " ", "into", " ", "account"}]}]}], "*)"}], 
+        "\[IndentingNewLine]", 
+        RowBox[{"mx", "=", "0"}], ",", "\[IndentingNewLine]", 
+        RowBox[{"(*", 
+         RowBox[{
+          RowBox[{"a", " ", "k"}], "-", "max"}], "*)"}], 
+        "\[IndentingNewLine]", 
+        RowBox[{"path", "=", 
+         RowBox[{"ConstantArray", "[", 
+          RowBox[{"0", ",", "t"}], "]"}]}], ",", "\[IndentingNewLine]", "i", 
+        ",", "j", ",", "k"}], "\[IndentingNewLine]", "}"}], ",", 
+      "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"For", "[", 
+        RowBox[{
+         RowBox[{"i", "=", "1"}], ",", 
+         RowBox[{"i", "\[LessEqual]", "m"}], ",", 
+         RowBox[{"i", "++"}], ",", 
+         RowBox[{
+          RowBox[{"v", "[", 
+           RowBox[{"[", "i", "]"}], "]"}], "=", 
+          RowBox[{
+           RowBox[{"E", "[", 
+            RowBox[{"[", 
+             RowBox[{"i", ",", 
+              RowBox[{"e", "[", 
+               RowBox[{"[", "1", "]"}], "]"}]}], "]"}], "]"}], 
+           RowBox[{"X", "[", 
+            RowBox[{"[", "i", "]"}], "]"}]}]}]}], "]"}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"(*", "initialization", "*)"}], "\[IndentingNewLine]", 
+       RowBox[{"For", "[", 
+        RowBox[{
+         RowBox[{"i", "=", "2"}], ",", 
+         RowBox[{"i", "\[LessEqual]", "t"}], ",", 
+         RowBox[{"i", "++"}], ",", "\[IndentingNewLine]", 
+         RowBox[{"(*", 
+          RowBox[{
+           RowBox[{
+            RowBox[{
+            "we", " ", "move", " ", "forward", " ", "according", " ", "to", 
+             " ", "the", " ", "evidences"}], ";", " ", 
+            RowBox[{
+            "every", " ", "iteration", " ", "on", " ", "i", " ", "gives", " ",
+              "the", " ", "vector", " ", "v_i"}]}], ",", " ", 
+           RowBox[{
+           "even", " ", "if", " ", "we", " ", "always", " ", "use", " ", 
+            "the", " ", "very", " ", "same", " ", "variable"}], ",", " ", 
+           RowBox[{"up", " ", "to", " ", "t"}]}], "*)"}], 
+         "\[IndentingNewLine]", 
+         RowBox[{"For", "[", 
+          RowBox[{
+           RowBox[{"j", "=", "1"}], ",", 
+           RowBox[{"j", "\[LessEqual]", "m"}], ",", 
+           RowBox[{"j", "++"}], ",", "\[IndentingNewLine]", 
+           RowBox[{"(*", 
+            RowBox[{"checking", " ", "every", " ", "variable"}], "*)"}], 
+           "\[IndentingNewLine]", 
+           RowBox[{
+            RowBox[{"For", "[", 
+             RowBox[{
+              RowBox[{"k", "=", "1"}], ",", 
+              RowBox[{"k", "\[LessEqual]", "m"}], ",", 
+              RowBox[{"k", "++"}], ",", 
+              RowBox[{
+               RowBox[{"max", "[", 
+                RowBox[{"[", "k", "]"}], "]"}], "=", 
+               RowBox[{
+                RowBox[{"M", "[", 
+                 RowBox[{"[", 
+                  RowBox[{"k", ",", "j"}], "]"}], "]"}], 
+                RowBox[{"v", "[", 
+                 RowBox[{"[", "k", "]"}], "]"}]}]}]}], "]"}], ";", 
+            "\[IndentingNewLine]", 
+            RowBox[{"(*", 
+             RowBox[{
+             "vector", " ", "of", " ", "the", " ", "max", " ", "candidates"}],
+              "*)"}], "\[IndentingNewLine]", 
+            RowBox[{"mx", "=", 
+             RowBox[{"Max", "[", "max", "]"}]}], ";", "\[IndentingNewLine]", 
+            RowBox[{"(*", 
+             RowBox[{"the", " ", "max"}], "*)"}], "\[IndentingNewLine]", 
+            RowBox[{
+             RowBox[{"ptr", "[", 
+              RowBox[{"[", 
+               RowBox[{
+                RowBox[{"i", "-", "1"}], ",", "j"}], "]"}], "]"}], "=", 
+             RowBox[{"First", "[", 
+              RowBox[{"First", "[", 
+               RowBox[{"Position", "[", 
+                RowBox[{"max", ",", "mx"}], "]"}], "]"}], "]"}]}], ";", 
+            "\[IndentingNewLine]", 
+            RowBox[{"(*", 
+             RowBox[{
+              RowBox[{
+              "a", " ", "che", " ", "stato", " ", "corrisponde", " ", "il", 
+               " ", 
+               RowBox[{"massimo", "?", " ", "basta"}], " ", "vederne", " ", 
+               "la", " ", "posizione"}], ",", " ", 
+              RowBox[{
+              "perch\[EGrave]", " ", "i", " ", "candidati", " ", "sono", " ", 
+               "calcolati", " ", "in", " ", "ordine"}], ",", " ", 
+              RowBox[{"due", " ", "righe", " ", "sopra", " ", 
+               RowBox[{"(", 
+                RowBox[{
+                "Position", " ", "ritorna", " ", "una", " ", "lista", " ", 
+                 "di", " ", "liste"}], ")"}]}]}], "*)"}], 
+            "\[IndentingNewLine]", 
+            RowBox[{"(*", 
+             RowBox[{
+              RowBox[{
+              "to", " ", "what", " ", "state", " ", "does", " ", "the", " ", 
+               "max", " ", "correspond", " ", 
+               RowBox[{"to", "?", " ", "we"}], " ", "can", " ", "just", " ", 
+               "see", " ", "its", " ", "position"}], ",", " ", 
+              RowBox[{
+              "as", " ", "the", " ", "candidates", " ", "are", " ", 
+               "computed", " ", "in", " ", "order"}], ",", " ", 
+              RowBox[{"two", " ", "lines", " ", "above", " ", 
+               RowBox[{"(", 
+                RowBox[{
+                 RowBox[{"Position", "[", "]"}], " ", "returns", " ", "a", 
+                 " ", "list", " ", "of", " ", "lists"}], ")"}]}]}], "*)"}], 
+            "\[IndentingNewLine]", 
+            RowBox[{
+             RowBox[{"v", "[", 
+              RowBox[{"[", "j", "]"}], "]"}], "=", 
+             RowBox[{
+              RowBox[{"E", "[", 
+               RowBox[{"[", 
+                RowBox[{"j", ",", 
+                 RowBox[{"e", "[", 
+                  RowBox[{"[", "i", "]"}], "]"}]}], "]"}], "]"}], 
+              "mx"}]}]}]}], "\[IndentingNewLine]", 
+          RowBox[{"(*", 
+           RowBox[{
+           "overwriting", " ", "the", " ", "previous", " ", "v", " ", "with", 
+            " ", "the", " ", "current"}], "*)"}], "\[IndentingNewLine]", 
+          "]"}]}], "\[IndentingNewLine]", "]"}], ";", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"path", "[", 
+         RowBox[{"[", "t", "]"}], "]"}], "=", 
+        RowBox[{"First", "[", 
+         RowBox[{"First", "[", 
+          RowBox[{"Position", "[", 
+           RowBox[{"v", ",", 
+            RowBox[{"Max", "[", "v", "]"}]}], "]"}], "]"}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"(*", 
+        RowBox[{
+         RowBox[{"let", "'"}], "s", " ", "seek", " ", "to", " ", "the", " ", 
+         "last", " ", "state"}], "*)"}], "\[IndentingNewLine]", 
+       RowBox[{"For", "[", 
+        RowBox[{
+         RowBox[{"i", "=", 
+          RowBox[{"t", "-", "1"}]}], ",", 
+         RowBox[{"i", "\[GreaterEqual]", "1"}], ",", 
+         RowBox[{"i", "--"}], ",", 
+         RowBox[{
+          RowBox[{"path", "[", 
+           RowBox[{"[", "i", "]"}], "]"}], "=", 
+          RowBox[{"ptr", "[", 
+           RowBox[{"[", 
+            RowBox[{"i", ",", 
+             RowBox[{"path", "[", 
+              RowBox[{"[", 
+               RowBox[{"i", "+", "1"}], "]"}], "]"}]}], "]"}], "]"}]}]}], 
+        "]"}], ";", "\[IndentingNewLine]", 
+       RowBox[{"(*", 
+        RowBox[{"backtrack", " ", "on", " ", "ptr"}], "*)"}], 
+       "\[IndentingNewLine]", 
+       RowBox[{"{", 
+        RowBox[{"v", ",", "path"}], "}"}]}]}], "\[IndentingNewLine]", 
+     RowBox[{"(*", 
+      RowBox[{
+       RowBox[{"what", " ", "we", " ", 
+        RowBox[{"return", ":", "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{"-", "for"}], " ", "every", " ", "state"}]}]}], ",", " ", 
+       RowBox[{
+        RowBox[{
+        "the", " ", "score", " ", "of", " ", "the", " ", "most", " ", 
+         "likely", " ", "path", " ", "ending", " ", "it", " ", "it"}], 
+        "\[IndentingNewLine]", " ", "-", 
+        RowBox[{
+        "the", " ", "path", " ", "of", " ", "most", " ", "likely", " ", 
+         "states"}]}]}], "\[IndentingNewLine]", "*)"}], "\[IndentingNewLine]",
+      "]"}]}], "\[IndentingNewLine]", "]"}]}]], "Input",
+ CellChangeTimes->{{3.51480691546875*^9, 3.514806940234375*^9}, {
+   3.514806984375*^9, 3.51480699703125*^9}, {3.514808406234375*^9, 
+   3.51480863765625*^9}, {3.514808691203125*^9, 3.514808720390625*^9}, {
+   3.51480876428125*^9, 3.514808799171875*^9}, {3.5148088368125*^9, 
+   3.514808879375*^9}, {3.514809049359375*^9, 3.514809162171875*^9}, {
+   3.51480919996875*^9, 3.514809245203125*^9}, {3.514809354609375*^9, 
+   3.514809414359375*^9}, {3.51480944803125*^9, 3.514809450640625*^9}, {
+   3.51480953*^9, 3.514809608171875*^9}, 3.514809639875*^9, {
+   3.514809672140625*^9, 3.51480975534375*^9}, {3.51480985915625*^9, 
+   3.51480994584375*^9}, {3.5148101386875*^9, 3.514810138796875*^9}, {
+   3.514810181703125*^9, 3.514810192609375*^9}, {3.51481022284375*^9, 
+   3.51481027096875*^9}, {3.514810898875*^9, 3.514811095875*^9}, {
+   3.514811325453125*^9, 3.51481138*^9}, {3.514811482203125*^9, 
+   3.514811611203125*^9}, {3.514811645328125*^9, 3.514811707546875*^9}, {
+   3.514812143703125*^9, 3.51481216190625*^9}, {3.514812325703125*^9, 
+   3.514812366578125*^9}, {3.51481268046875*^9, 3.5148126895*^9}, {
+   3.515140480375*^9, 3.515140482890625*^9}, {3.515142393578125*^9, 
+   3.515142402203125*^9}, {3.51514247096875*^9, 3.515142486453125*^9}, {
+   3.5151425184375*^9, 3.515142532609375*^9}, 3.515142633484375*^9, {
+   3.51514275015625*^9, 3.515142844234375*^9}, {3.515142924046875*^9, 
+   3.515142929640625*^9}, {3.5151429719375*^9, 3.5151429766875*^9}, {
+   3.51514313709375*^9, 3.515143153234375*^9}, {3.515143325734375*^9, 
+   3.51514333984375*^9}, {3.515143505953125*^9, 3.515143540625*^9}, {
+   3.515143676296875*^9, 3.515143776515625*^9}, {3.515143831703125*^9, 
+   3.51514383659375*^9}, {3.5151438963125*^9, 3.515143922640625*^9}, {
+   3.515143963140625*^9, 3.515143986375*^9}, {3.5151440515*^9, 
+   3.51514406053125*^9}, {3.515144106984375*^9, 3.5151441100625*^9}, {
+   3.515144327046875*^9, 3.515144329421875*^9}, {3.515144389*^9, 
+   3.5151443900625*^9}, {3.5151445780625*^9, 3.5151445968125*^9}, {
+   3.515144675234375*^9, 3.515144698515625*^9}, {3.51514479621875*^9, 
+   3.515144824234375*^9}, {3.515145013625*^9, 3.51514510075*^9}, {
+   3.515146030984375*^9, 3.5151460321875*^9}, {3.515146120546875*^9, 
+   3.51514613765625*^9}, {3.5151462410625*^9, 3.515146249875*^9}, {
+   3.515146468078125*^9, 3.51514649753125*^9}, {3.515146554265625*^9, 
+   3.51514666071875*^9}, {3.5151468629375*^9, 3.515146870875*^9}, {
+   3.51514693475*^9, 3.515147000734375*^9}, {3.5151472158125*^9, 
+   3.515147243390625*^9}, 3.51514782834375*^9, {3.51514916171875*^9, 
+   3.515149166109375*^9}, {3.515149504453125*^9, 3.5151495085625*^9}, {
+   3.51514957184375*^9, 3.5151496060625*^9}, {3.515149728171875*^9, 
+   3.51514973284375*^9}, {3.5151505873125*^9, 3.5151505878125*^9}, {
+   3.5151506291875*^9, 3.5151506300625*^9}, {3.515151285484375*^9, 
+   3.515151298421875*^9}, {3.515151338296875*^9, 3.515151396203125*^9}, {
+   3.51515195253125*^9, 3.515151959953125*^9}, {3.515183897734375*^9, 
+   3.5151839256875*^9}, {3.515184143234375*^9, 3.515184148796875*^9}, {
+   3.515184188078125*^9, 3.515184304765625*^9}, {3.515184367265625*^9, 
+   3.51518440259375*^9}, 3.515184461296875*^9, {3.515184492453125*^9, 
+   3.515184493515625*^9}, {3.5151845364375*^9, 3.515184537015625*^9}, {
+   3.515184622703125*^9, 3.5151846228125*^9}, {3.515184666265625*^9, 
+   3.51518472228125*^9}, {3.51518554290625*^9, 3.51518572909375*^9}, {
+   3.51518576065625*^9, 3.51518577284375*^9}, {3.51518580946875*^9, 
+   3.51518582675*^9}, {3.515185862*^9, 3.515185863875*^9}, {
+   3.515185895265625*^9, 3.5151860098125*^9}, {3.515186167828125*^9, 
+   3.515186171015625*^9}, {3.515186968296875*^9, 3.5151869724375*^9}, {
+   3.51523184609375*^9, 3.515231847015625*^9}, {3.515234262984375*^9, 
+   3.51523426346875*^9}, {3.51523438790625*^9, 3.515234388359375*^9}, {
+   3.51523444271875*^9, 3.515234443421875*^9}, {3.5152367879375*^9, 
+   3.515236788234375*^9}, {3.51523721171875*^9, 3.515237212703125*^9}, {
+   3.515237267828125*^9, 3.51523728553125*^9}, 3.515237813671875*^9, {
+   3.51533402434375*^9, 3.515334046421875*^9}, {3.63009245884375*^9, 
+   3.63009250334375*^9}, {3.6300925644375*^9, 3.630093134046875*^9}}]
+},
+WindowSize->{1272, 713},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+PrivateNotebookOptions->{"VersionedStylesheet"->{"Default.nb"[8.] -> False}},
+ShowSelection->True,
+Magnification:>FEPrivate`If[
+  FEPrivate`Equal[FEPrivate`$VersionNumber, 6.], 1.5, 1.5 Inherited],
+FrontEndVersion->"9.0 for Microsoft Windows (32-bit) (January 25, 2013)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[557, 20, 15365, 329, 1612, "Input"]
+}
+]
+*)
+
+(* End of internal cache information *)
